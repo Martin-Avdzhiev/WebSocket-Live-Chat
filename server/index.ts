@@ -2,30 +2,13 @@ import { Server as WebSocketServer, WebSocket, RawData } from "ws";
 import { createServer, IncomingMessage } from "http";
 import { parse } from "url";
 import { v4 as uuidv4 } from "uuid";
+import { Connections } from "./types";
 
 const server = createServer();
 const wsServer = new WebSocketServer({ server });
 
-type User = {
-    username: string;
-};
-
-type Connections = {
-    [uuid: string]: { socket: WebSocket; user: User };
-};
-
 const port = 8000;
 const connections: Connections = {};
-
-// Sends a message to all clients
-const broadcast = (data: object) => {
-    const message = JSON.stringify(data);
-    Object.values(connections).forEach(({ socket }) => {
-        if (socket.readyState === WebSocket.OPEN) {
-            socket.send(message);
-        }
-    });
-};
 
 // Handles incoming messages
 const handleMessage = (message: RawData, senderUuid: string) => {
@@ -40,7 +23,7 @@ const handleMessage = (message: RawData, senderUuid: string) => {
 
             // Broadcast the message to all clients
             broadcast({ username: sender.username, message: text });
-
+            console.log(`Broadcasted message from ${sender.username}: ${text}`);
         } catch (error) {
             console.error("Error parsing message:", error);
         }
@@ -51,6 +34,16 @@ const handleMessage = (message: RawData, senderUuid: string) => {
 const handleClose = (uuid: string) => {
     console.log(`${connections[uuid]?.user.username} disconnected`);
     delete connections[uuid];
+};
+
+// Sends a message to all clients
+const broadcast = (data: { username: string; message: string }) => {
+    const message = JSON.stringify(data);
+    Object.values(connections).forEach((x) => {
+        if (x.socket.readyState === WebSocket.OPEN) {
+            x.socket.send(message);
+        }
+    });
 };
 
 // ws://localhost:8000/?username=John

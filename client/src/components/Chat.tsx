@@ -39,21 +39,25 @@ const Chat = ({ username }: { username: string }) => {
   };
 
   return (
-    <div className="flex items-end justify-center flex-col border w-60">
-      <div className="flex flex-col border w-40 gap-2 p-2 max-h-60 overflow-y-scroll">
-        <p className="p-2 font-bold">{username}</p>
-        {messages.map((msg, index) => (
-          <p
-            key={index}
-            className={`p-2 max-w-[75%] break-words whitespace-normal border rounded ${
-              msg.username === username
-                ? "bg-blue-200 text-right"
-                : "bg-gray-100"
-            }`}
-          >
-            <strong>{msg.username}:</strong> {msg.message}
-          </p>
-        ))}
+    <div className="flex justify-center items-center flex-col border w-60">
+      <div className=" w-full flex-col gap-2">
+        <div className="flex justify-center">
+          <p className="p-2 font-bold">{username}</p>
+        </div>
+        <div className="flex items-end justify-center flex-col max-h-60 overflow-y-auto">
+          {messages.map((msg, index) => (
+            <p
+              key={index}
+              className={`p-2 w-[${msg.username.length + msg.message.length + 2}ch] max-w-[80%] break-words whitespace-normal border rounded ${
+                msg.username === username
+                  ? "bg-blue-200 text-right"
+                  : "bg-gray-100"
+              }`}
+            >
+              <strong>{msg.username}:</strong> {msg.message}
+            </p>
+          ))}
+        </div>
       </div>
       <div className="border p-2 w-full">
         <input
