@@ -28,9 +28,3 @@ export const useMessages = ({ currentMessage, username, sendJsonMessageThrottled
         setCurrentMessage("");
     }
 };
-
-
-// const { sendJsonMessage, lastJsonMessage } = useWebSocket<{
-//     username: string;
-//     message: string;
-// }>(WS_URL, { share: true, queryParams: { username } });
