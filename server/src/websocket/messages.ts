@@ -28,7 +28,6 @@ const handleClose = (uuid: string) => {
 
 const broadcast = (data: { username: string; message: string }) => {
     const message = JSON.stringify(data);
-    // console.log(message)
     Object.values(connections).forEach((x) => {
         console.log(x.socket.readyState === WebSocket.OPEN)
         if (x.socket.readyState === WebSocket.OPEN) {

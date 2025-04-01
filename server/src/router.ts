@@ -5,8 +5,23 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 const router = Router();
 
-router.get("/", (req, res) => {
+router.get("/", (req: Request, res: Response): void => {
     res.send("Hello World!");
+});
+
+router.get("/users", async (req: Request, res: Response): Promise<void> => {
+    try {
+        const users = await prisma.user.findMany();
+        if (users.length === 0) {
+            res.status(404).send("No users found");
+        } else {
+            res.status(200).json(users);
+        }
+
+    } catch (error) {
+        console.error("Error fetching users:", error);
+        res.status(500).json({ error: "Failed to fetch users" });
+    }
 });
 
 router.post("/users", async (req: Request, res: Response): Promise<void> => {
@@ -26,7 +41,10 @@ router.post("/users", async (req: Request, res: Response): Promise<void> => {
         res.status(201).json(newUser);
     } catch (error: PrismaClientKnownRequestError | any) {
         console.error("Error creating user:", error);
-        if(error.code === "P2002") res.status(409).json({ error: "User already exists" });
+        if (error.code === "P2002") {
+            res.status(409).json({ error: "User already exists" });
+            return;
+        }
         res.status(500).json({ error: "Failed to create user" });
     }
 });
