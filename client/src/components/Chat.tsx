@@ -48,7 +48,9 @@ const Chat = ({ username }: { username: string }) => {
           {messages.map((msg, index) => (
             <p
               key={index}
-              className={`p-2 w-[${msg.username.length + msg.message.length + 2}ch] max-w-[80%] break-words whitespace-normal border rounded ${
+              className={`p-2 w-[${
+                msg.username.length + msg.message.length + 2
+              }ch] max-w-[80%] break-words whitespace-normal border rounded ${
                 msg.username === username
                   ? "bg-blue-200 text-right"
                   : "bg-gray-100"
