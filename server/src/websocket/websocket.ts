@@ -8,7 +8,7 @@ import { Connections } from "../types";
 
 const connections: Connections = {};
 
-export const setupWebSocketServer = (server: Server) => {
+const setupWebSocketServer = (server: Server) => {
     const wsServer = new WebSocketServer({ server });
 
     wsServer.on("connection", (socket: WebSocket, request) => {
@@ -35,3 +35,5 @@ export const setupWebSocketServer = (server: Server) => {
     });
 
 };
+
+export {setupWebSocketServer, connections };

@@ -1,19 +1,20 @@
-import { RawData } from "ws";
+import { RawData, WebSocket } from "ws";
 
-import { Connections } from "../types";
-
-const connections: Connections = {};
-const handleMessage = (message: RawData, senderUuid: string) => {
-    if (typeof message === "string" || Buffer.isBuffer(message)) {
+import { Message } from "../types";
+import { connections } from "./websocket";
+const handleMessage = (buffer: RawData, senderUuid: string) => {
+    const data: Message = JSON.parse(buffer.toString());
+    if (data) {
         try {
-            const { message: text } = JSON.parse(message.toString());
-            if (!text || typeof text !== "string") return;
+            const { message } = data;
+            if (!message || typeof message !== "string") return;
 
             const sender = connections[senderUuid]?.user;
+            console.log(sender)
             if (!sender) return;
 
-            broadcast({ username: sender.username, message: text });
-            console.log(`Broadcasted message from ${sender.username}: ${text}`);
+            broadcast({ username: sender.username, message });
+            console.log(`Broadcasted message from ${sender.username}: ${message}`);
         } catch (error) {
             console.error("Error parsing message:", error);
         }
@@ -27,7 +28,9 @@ const handleClose = (uuid: string) => {
 
 const broadcast = (data: { username: string; message: string }) => {
     const message = JSON.stringify(data);
+    // console.log(message)
     Object.values(connections).forEach((x) => {
+        console.log(x.socket.readyState === WebSocket.OPEN)
         if (x.socket.readyState === WebSocket.OPEN) {
             x.socket.send(message);
         }
