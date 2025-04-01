@@ -42,8 +42,18 @@ router.post("/users", async (req: Request, res: Response): Promise<void> => {
     } catch (error: PrismaClientKnownRequestError | any) {
         console.error("Error creating user:", error);
         if (error.code === "P2002") {
-            res.status(409).json({ error: "User already exists" });
-            return;
+            try {
+                const existingUser = await prisma.user.findUnique({
+                    where: {
+                        username: user.username
+                    }
+                })
+                res.status(200).json(existingUser);
+                return
+            } catch (error) {
+                res.status(500).json({ error: "Failed to create user" });
+                return;
+            }
         }
         res.status(500).json({ error: "Failed to create user" });
     }
