@@ -3,6 +3,7 @@
     "start": "nodemon --ext ts --exec ts-node src/index.ts"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.17",
     "@types/express": "^5.0.1",
     "@types/node": "^22.13.11",
     "@types/pg": "^8.11.11",
@@ -13,6 +14,7 @@
   "dependencies": {
     "@prisma/client": "^6.5.0",
     "@types/ws": "^8.18.0",
+    "cors": "^2.8.5",
     "express": "^4.21.2",
     "pg": "^8.14.1",
     "prisma": "^6.5.0",

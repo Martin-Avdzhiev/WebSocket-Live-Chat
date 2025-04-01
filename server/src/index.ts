@@ -1,10 +1,12 @@
 import express, { json } from "express";
 import { createServer } from "http";
+import cors from 'cors';
 
 import router from "./router";
 import { setupWebSocketServer } from "./websocket/websocket";
 
 const app = express();
+app.use(cors());
 app.use(json());
 app.use(router);
 const port = 8000;
