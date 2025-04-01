@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import useWebSocket from "react-use-websocket";
 import throttle from "lodash.throttle";
+import { useMessages } from "../hooks/useMessages";
 
 const WS_URL = "ws://localhost:8000/";
 
@@ -24,19 +25,13 @@ const Chat = ({ username }: { username: string }) => {
     }
   }, [lastJsonMessage, username]);
 
-  const sendMessage = () => {
-    if (!currentMessage.trim()) return;
-
-    const newMessage = { username, message: currentMessage.trim() };
-
-    //Sending the message
-    sendJsonMessageThrottled.current(newMessage);
-
-    //Locally adding the message only if WebSocket is not going to return it
-    setMessages((prevMessages) => [...prevMessages, newMessage]);
-
-    setCurrentMessage("");
-  };
+  const sendMessage = useMessages({
+    currentMessage,
+    username,
+    sendJsonMessageThrottled,
+    setMessages,
+    setCurrentMessage,
+  });
 
   return (
     <div className="flex justify-center items-center flex-col border w-60">
