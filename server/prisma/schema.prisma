@@ -14,11 +14,39 @@ datasource db {
 }
 
 model User {
-  id        String    @id @default(uuid())
-  username  String    @unique @db.VarChar(30)
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime  @updatedAt @map("updated_at")
-  deletedAt DateTime? @map("deleted_at")
+  id               String     @id @default(uuid())
+  username         String     @unique @db.VarChar(30)
+  createdAt        DateTime   @default(now()) @map("created_at")
+  updatedAt        DateTime   @updatedAt @map("updated_at")
+  deletedAt        DateTime?  @map("deleted_at")
+  sentMessages     Message[]  @relation("SentMessages")
+  receivedMessages Message[]  @relation("ReceivedMessages")
+  chatRooms        ChatRoom[] @relation("ChatRoomUsers")
 
   @@map("users")
+}
+
+model Message {
+  id         String    @id @default(uuid())
+  content    String    @db.VarChar(5000)
+  senderId   String
+  sender     User      @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  receiverId String
+  receiver   User      @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
+  createdAt  DateTime  @default(now()) @map("created_at")
+  ChatRoom   ChatRoom? @relation(fields: [chatRoomId], references: [id])
+  chatRoomId String?
+
+  @@index([senderId])
+  @@index([receiverId])
+  @@index([createdAt])
+  @@map("messages")
+}
+
+model ChatRoom {
+  id        String    @id @default(uuid())
+  name      String?
+  messages  Message[]
+  users     User[]    @relation("ChatRoomUsers")
+  createdAt DateTime  @default(now())
 }

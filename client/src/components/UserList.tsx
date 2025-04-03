@@ -2,16 +2,16 @@ import { useState, useEffect } from "react";
 import useGetUsers, { User } from "../hooks/useGetUsers";
 
 const UserList = ({
-  setChatUsername,
+  setReceiverUsername,
 }: {
-  setChatUsername: React.Dispatch<React.SetStateAction<string>>;
+  setReceiverUsername: React.Dispatch<React.SetStateAction<string>>;
 }) => {
   const [users, setUsers] = useState<User[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   const handleChatUsername = (username: string) => {
     console.log("hi");
-    setChatUsername(username);
+    setReceiverUsername(username);
   };
 
   useEffect(() => {
