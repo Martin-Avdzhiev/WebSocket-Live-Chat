@@ -5,7 +5,13 @@ import { useMessages } from "../hooks/useMessages";
 
 const WS_URL = "ws://localhost:8000/";
 
-const Chat = ({ username }: { username: string }) => {
+const Chat = ({
+  username,
+  chatUsername,
+}: {
+  username: string;
+  chatUsername: string;
+}) => {
   const [currentMessage, setCurrentMessage] = useState<string>("");
   const [messages, setMessages] = useState<
     { username: string; message: string }[]
@@ -34,10 +40,10 @@ const Chat = ({ username }: { username: string }) => {
   });
 
   return (
-    <div className="flex justify-center items-center flex-col border w-60">
+    <div className="flex justify-center items-center flex-col w-60 bg-gradient-to-br from-[#B8D7FF] to-[#D7B8FF] border-white/50 shadow-md rounded-lg">
       <div className=" w-full flex-col gap-2">
         <div className="flex justify-center">
-          <p className="p-2 font-bold">{username}</p>
+          <p className="p-2 font-bold">{chatUsername}</p>
         </div>
         <div className="flex items-end justify-center flex-col max-h-60 overflow-y-auto">
           {messages.map((msg, index) => (
@@ -56,7 +62,7 @@ const Chat = ({ username }: { username: string }) => {
           ))}
         </div>
       </div>
-      <div className="border p-2 w-full">
+      <div className="p-2 w-full rounded-lg">
         <input
           className="border w-full p-1"
           type="text"

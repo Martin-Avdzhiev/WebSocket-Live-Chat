@@ -12,3 +12,33 @@
   --ease-snappy: cubic-bezier(0.2, 0, 0, 1);
   /* ... */
 }
+
+@layer utilities {
+  .bg-gradient-custom {
+    background: linear-gradient(120deg, #3498db, #8e44ad, #3498db);
+    background-size: 200%;
+  }
+    @keyframes moveGradient {
+      0% {
+        background-position: 0% 0%;
+      }
+      50% {
+        background-position: 100% 100%;
+      }
+      100% {
+        background-position: 0% 0%;
+      }
+    }
+  
+    .animate-gradient {
+      background: linear-gradient(100deg, #3498db, #8e44ad, #3498db);
+      background-size: 200% 200%;
+      animation: moveGradient 2.5s infinite linear;
+    }
+  }
+
+body {
+  min-height: 100vh;
+  background-image: linear-gradient(120deg, #3498db, #8e44ad);
+  overflow: auto;
+}
