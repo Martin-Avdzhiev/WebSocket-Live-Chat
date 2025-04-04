@@ -1,26 +1,27 @@
 import { useState, useEffect } from "react";
 import useGetUsers, { User } from "../hooks/useGetUsers";
+import { LoginResponse } from "../types";
 
-const UserList = ({
-  setReceiverUsername,
-}: {
+type UserListProps = {
+  user: LoginResponse | null;
   setReceiverUsername: React.Dispatch<React.SetStateAction<string>>;
-}) => {
+};
+
+const UserList = ({ user, setReceiverUsername }: UserListProps) => {
   const [users, setUsers] = useState<User[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   const handleChatUsername = (username: string) => {
-    console.log("hi");
     setReceiverUsername(username);
   };
 
   useEffect(() => {
-    useGetUsers()
+    useGetUsers(user)
       .then((users) => setUsers(users))
       .catch((err) => setError(err));
   }, []);
   return (
-    <div className="  w-fit flex flex-col gap-2 py-2 px-4  bg-[#D0E7FF] shadow-lg rounded-lg p-4 border border-white/50">
+    <div className="  w-fit flex flex-col gap-2 py-2 px-4 bg-[#D0E7FF] shadow-lg rounded-lg p-4 border border-white/50">
       {!error ? (
         users.map((user) => (
           <div

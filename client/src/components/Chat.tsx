@@ -15,11 +15,11 @@ const Chat = ({ user, receiverUsername }: ChatProps) => {
   const [currentMessage, setCurrentMessage] = useState<string>("");
 
   const [messages, setMessages] = useState<
-    { username: string; message: string }[]
+    { senderUsername: string; message: string; receiverUsername: string }[]
   >([]);
 
   const { sendJsonMessage, lastJsonMessage } = useWebSocket<{
-    username: string;
+    senderUsername: string;
     message: string;
     receiverUsername: string;
   }>(WS_URL, { share: true, queryParams: { username: user.username } });
@@ -31,7 +31,11 @@ const Chat = ({ user, receiverUsername }: ChatProps) => {
     if (lastJsonMessage?.message) {
       setMessages((prevMessages) => [
         ...prevMessages,
-        { username: user.username, message: lastJsonMessage.message },
+        {
+          senderUsername: lastJsonMessage.senderUsername,
+          message: lastJsonMessage.message,
+          receiverUsername: lastJsonMessage.receiverUsername,
+        },
       ]);
     }
   }, [lastJsonMessage, user.username]);
@@ -47,22 +51,21 @@ const Chat = ({ user, receiverUsername }: ChatProps) => {
   return (
     <div className="flex justify-center items-center flex-col w-60 bg-gradient-to-br from-[#B8D7FF] to-[#D7B8FF] border-white/50 shadow-md rounded-lg">
       <div className=" w-full flex-col gap-2">
-        <div className="flex justify-center">
-          <p className="p-2 font-bold">{receiverUsername}</p>
+        <div className="flex flex-wrap justify-center">
+          <p className="p-2 font-bold w-full">{receiverUsername}</p>
+          <p className="p-2 font-bold">my username - {user.username}</p>
         </div>
-        <div className="flex items-end justify-center flex-col max-h-60 overflow-y-auto">
+        <div className="flex items-end justify-center flex-col max-h-60 overflow-y-auto w-full">
           {messages.map((msg, index) => (
             <p
               key={index}
-              className={`p-2 w-[${
-                msg.username.length + msg.message.length + 2
-              }ch] max-w-[80%] break-words whitespace-normal border rounded ${
-                msg.username === user.username
-                  ? "bg-blue-200 text-right"
-                  : "bg-gray-100"
+              className={`p-2 max-w-[80%] break-words whitespace-normal border rounded ${
+                msg.senderUsername === user.username
+                  ? "bg-blue-200 self-start text-left"
+                  : "bg-gray-100 self-end text-right"
               }`}
             >
-              <strong>{msg.username}:</strong> {msg.message}
+              <strong>{msg.senderUsername}:</strong> {msg.message}
             </p>
           ))}
         </div>

@@ -6,18 +6,18 @@ import { connections } from "./websocket";
 const sendToUsers = (
     senderUuid: string,
     receiverUuid: string,
-    data: { username: string; message: string }
+    data: { senderUsername: string; message: string; receiverUsername: string }
 ) => {
     const message = JSON.stringify(data);
     console.log(message)
 
-    // Изпращане до изпращача
+    // Send message to the sender
     const senderSocket = connections[senderUuid]?.socket;
     if (senderSocket && senderSocket.readyState === WebSocket.OPEN) {
         senderSocket.send(message);
     }
 
-    // Изпращане до получателя
+    // Send message to the receiver
     const receiverSocket = connections[receiverUuid]?.socket;
     if (receiverSocket && receiverSocket.readyState === WebSocket.OPEN) {
         receiverSocket.send(message);
@@ -29,20 +29,17 @@ const handleMessage = (buffer: RawData, senderUuid: string) => {
     if (data) {
         try {
             const { message, receiverUsername } = data;
-            console.log(receiverUsername)
             if (!message || typeof message !== "string") return;
 
             const sender = connections[senderUuid]?.user;
-            console.log(sender)
             if (!sender) return;
             const receiverUuid = Object.keys(connections).find(
                 (uuid) => connections[uuid].user.username === receiverUsername
-              );
-
-              if(!receiverUuid) return;
-            // Изпрати съобщението само до изпращача и получателя
+            );
+            if (!receiverUuid) return;
             sendToUsers(senderUuid, receiverUuid, {
-                username: sender.username,
+                senderUsername: sender.username,
+                receiverUsername,
                 message,
             });
             console.log(`Broadcasted message from ${sender.username}: ${message}`);

@@ -1,3 +1,5 @@
+import { LoginResponse } from "../types";
+
 export type User = {
     id: string;
     username: string;
@@ -5,9 +7,9 @@ export type User = {
     updatedAt: Date;
     deletedAt: Date | null;
 }
-const useGetUsers = async () : Promise<User[]> => {
+const useGetUsers = async (user: LoginResponse | null): Promise<User[]> => {
     const response = await fetch('http://localhost:8000/users');
-    const users: User[] = await response.json();
+    const users: User[] = (await response.json()).filter((u: User) => u.username !== user?.username);
     return users
 }
 

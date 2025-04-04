@@ -18,7 +18,7 @@ function App() {
         <>
           <div className="flex h-full pt-4 px-4">
             <div className="flex w-fit h-fit">
-              <UserList setReceiverUsername={setReceiverUsername} />
+              <UserList setReceiverUsername={setReceiverUsername} user={user} />
             </div>
             <div className="flex items-end justify-end w-full">
               {receiverUsername && (
