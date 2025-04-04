@@ -1,5 +1,5 @@
 import { RawData, WebSocket } from "ws";
-
+import prisma from "../prismaClient";
 import { Message } from "../types";
 import { connections } from "./websocket";
 
@@ -9,7 +9,6 @@ const sendToUsers = (
     data: { senderUsername: string; message: string; receiverUsername: string }
 ) => {
     const message = JSON.stringify(data);
-    console.log(message)
 
     // Send message to the sender
     const senderSocket = connections[senderUuid]?.socket;
@@ -22,27 +21,47 @@ const sendToUsers = (
     if (receiverSocket && receiverSocket.readyState === WebSocket.OPEN) {
         receiverSocket.send(message);
     }
+
 };
 
-const handleMessage = (buffer: RawData, senderUuid: string) => {
+const handleMessage = async (buffer: RawData, senderUuid: string) => {
     const data: Message = JSON.parse(buffer.toString());
     if (data) {
         try {
             const { message, receiverUsername } = data;
             if (!message || typeof message !== "string") return;
 
-            const sender = connections[senderUuid]?.user;
+            const senderUsername = connections[senderUuid]?.user.username;
+            if (!senderUsername) return;
+
+            const sender = await prisma.user.findUnique({
+                where: { username: senderUsername },
+                select: { id: true },
+            });
             if (!sender) return;
-            const receiverUuid = Object.keys(connections).find(
-                (uuid) => connections[uuid].user.username === receiverUsername
-            );
-            if (!receiverUuid) return;
-            sendToUsers(senderUuid, receiverUuid, {
-                senderUsername: sender.username,
+
+            const receiver = await prisma.user.findUnique({
+                where: { username: receiverUsername },
+                select: { id: true },
+            });
+            if (!receiver) return;
+            console.log (sender)
+            console.log (receiver)
+            await prisma.message.create({
+                data: {
+                    content: message,
+                    senderId: sender.id,
+                    receiverId: receiver.id,
+                    chatRoomId: null,
+                },
+            });
+
+            sendToUsers(sender.id, receiver.id, {
+                senderUsername,
                 receiverUsername,
                 message,
             });
-            console.log(`Broadcasted message from ${sender.username}: ${message}`);
+            console.log(`Broadcasted message from ${senderUsername}: ${message}`);
         } catch (error) {
             console.error("Error parsing message:", error);
         }
