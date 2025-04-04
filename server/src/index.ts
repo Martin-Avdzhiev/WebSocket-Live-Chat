@@ -2,7 +2,7 @@ import express, { json } from "express";
 import { createServer } from "http";
 import cors from 'cors';
 
-import router from "./router";
+import router from "./routes/router";
 import { setupWebSocketServer } from "./websocket/websocket";
 
 const app = express();

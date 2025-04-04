@@ -5,9 +5,10 @@ import UserList from "./components/UserList";
 import { LoginResponse } from "./types";
 
 import { useLogin } from "./hooks/useLogin";
+import { User } from "./hooks/useGetUsers";
 function App() {
   const [user, setUser] = useState<LoginResponse | null>(null);
-  const [receiverUsername, setReceiverUsername] = useState("");
+  const [receiver, setReceiver] = useState<User | null>(null);
 
   const submitHandler = (username: string) => {
     useLogin({ username, setUser });
@@ -18,12 +19,10 @@ function App() {
         <>
           <div className="flex h-full pt-4 px-4">
             <div className="flex w-fit h-fit">
-              <UserList setReceiverUsername={setReceiverUsername} user={user} />
+              <UserList setReceiverUsername={setReceiver} user={user} />
             </div>
             <div className="flex items-end justify-end w-full">
-              {receiverUsername && (
-                <Chat user={user} receiverUsername={receiverUsername} />
-              )}
+              {receiver && <Chat user={user} receiver={receiver} />}
             </div>
           </div>
         </>

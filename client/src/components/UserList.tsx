@@ -4,15 +4,15 @@ import { LoginResponse } from "../types";
 
 type UserListProps = {
   user: LoginResponse | null;
-  setReceiverUsername: React.Dispatch<React.SetStateAction<string>>;
+  setReceiverUsername: React.Dispatch<React.SetStateAction<User | null>>;
 };
 
 const UserList = ({ user, setReceiverUsername }: UserListProps) => {
   const [users, setUsers] = useState<User[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  const handleChatUsername = (username: string) => {
-    setReceiverUsername(username);
+  const handleChatUsername = (user: User) => {
+    setReceiverUsername(user);
   };
 
   useEffect(() => {
@@ -22,12 +22,17 @@ const UserList = ({ user, setReceiverUsername }: UserListProps) => {
   }, []);
   return (
     <div className="  w-fit flex flex-col gap-2 py-2 px-4 bg-[#D0E7FF] shadow-lg rounded-lg p-4 border border-white/50">
+      <div className="flex justify-center text-center w-full">
+        <p className="whitespace-nowrap overflow-hidden text-ellipsis max-w-[20ch]">
+          Logged as {user?.username}
+        </p>
+      </div>
       {!error ? (
         users.map((user) => (
           <div
             key={user.id}
             className="flex items-center justify-start h-8 w-fit gap-2 cursor-pointer"
-            onClick={() => handleChatUsername(user.username)}
+            onClick={() => handleChatUsername(user)}
           >
             <div className="h-8 w-8 overflow-hidden rounded-full">
               <img

@@ -1,61 +1,63 @@
-import { useState, useEffect, useRef } from "react";
-import useWebSocket from "react-use-websocket";
-import throttle from "lodash.throttle";
-import { useMessages } from "../hooks/useMessages";
+import { useRef, useEffect, useState } from "react";
 import { LoginResponse } from "../types";
-
-const WS_URL = "ws://localhost:8000/";
+import { User } from "../hooks/useGetUsers";
+import useChatMessages from "../hooks/useChatMessages";
+import { useMessages } from "../hooks/useMessages";
 
 type ChatProps = {
   user: LoginResponse;
-  receiverUsername: string;
+  receiver: User;
 };
 
-const Chat = ({ user, receiverUsername }: ChatProps) => {
-  const [currentMessage, setCurrentMessage] = useState<string>("");
+const Chat = ({ user, receiver }: ChatProps) => {
+  const [currentMessage, setCurrentMessage] = useState("");
 
-  const [messages, setMessages] = useState<
-    { senderUsername: string; message: string; receiverUsername: string }[]
-  >([]);
+  const { previousMessages, messages, sendJsonMessageThrottled } =
+    useChatMessages({
+      userId: user.id,
+      userUsername: user.username,
+      receiver,
+    });
 
-  const { sendJsonMessage, lastJsonMessage } = useWebSocket<{
-    senderUsername: string;
-    message: string;
-    receiverUsername: string;
-  }>(WS_URL, { share: true, queryParams: { username: user.username } });
+  const bottomRef = useRef<HTMLDivElement | null>(null);
 
-  const sendJsonMessageThrottled = useRef(throttle(sendJsonMessage, 50));
-
-  //Handling incoming messages
   useEffect(() => {
-    if (lastJsonMessage?.message) {
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        {
-          senderUsername: lastJsonMessage.senderUsername,
-          message: lastJsonMessage.message,
-          receiverUsername: lastJsonMessage.receiverUsername,
-        },
-      ]);
-    }
-  }, [lastJsonMessage, user.username]);
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages.length]);
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView();
+  }, [previousMessages.length]);
 
   const sendMessage = useMessages({
     currentMessage,
     username: user.username,
-    receiverUsername,
+    receiverUsername: receiver.username,
     sendJsonMessageThrottled,
     setCurrentMessage,
   });
 
   return (
     <div className="flex justify-center items-center flex-col w-60 bg-gradient-to-br from-[#B8D7FF] to-[#D7B8FF] border-white/50 shadow-md rounded-lg">
-      <div className=" w-full flex-col gap-2">
+      <div className="w-full flex-col gap-2">
         <div className="flex flex-wrap justify-center">
-          <p className="p-2 font-bold w-full">{receiverUsername}</p>
-          <p className="p-2 font-bold">my username - {user.username}</p>
+          <p className="p-2 font-bold w-full">{receiver.username}</p>
         </div>
-        <div className="flex items-end justify-center flex-col max-h-60 overflow-y-auto w-full">
+        <div className="flex flex-col h-60 overflow-y-auto w-full">
+          {previousMessages.map((msg, index) => (
+            <p
+              key={index}
+              className={`p-2 max-w-[80%] break-words whitespace-normal border rounded ${
+                msg.senderId === user.id
+                  ? "bg-blue-200 self-start text-left"
+                  : "bg-gray-100 self-end text-right"
+              }`}
+            >
+              <strong>
+                {msg.senderId === user.id ? user.username : receiver.username}:
+              </strong>{" "}
+              {msg.content}
+            </p>
+          ))}
           {messages.map((msg, index) => (
             <p
               key={index}
@@ -68,6 +70,7 @@ const Chat = ({ user, receiverUsername }: ChatProps) => {
               <strong>{msg.senderUsername}:</strong> {msg.message}
             </p>
           ))}
+          <div ref={bottomRef} />
         </div>
       </div>
       <div className="p-2 w-full rounded-lg">
