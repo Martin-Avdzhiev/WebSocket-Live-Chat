@@ -4,6 +4,8 @@ import throttle from "lodash.throttle";
 import { Message } from "../types";
 import { User } from "./useGetUsers";
 import useGetUserDetails from "./useGetUserDetails";
+import { SendJsonMessage } from "react-use-websocket/dist/lib/types";
+import { DebouncedFunc } from 'lodash';
 
 type ChatMessagesArgs = {
   userId: string;
@@ -11,7 +13,27 @@ type ChatMessagesArgs = {
   receiver: User;
 };
 
-export default function useChatMessages({ userId, userUsername, receiver }: ChatMessagesArgs) {
+export type ReturnChatMessages = {
+  previousMessages: Message[];
+  messages: {
+    senderUsername: string;
+    message: string;
+    receiverUsername: string;
+  }[];
+  sendJsonMessageThrottled: React.RefObject<DebouncedFunc<SendJsonMessage>>;
+  setMessages: React.Dispatch<
+    React.SetStateAction<
+      {
+        senderUsername: string;
+        message: string;
+        receiverUsername: string;
+      }[]
+    >
+  >;
+  setPreviousMessages: React.Dispatch<React.SetStateAction<Message[]>>;
+}
+
+export default function useChatMessages({ userId, userUsername, receiver }: ChatMessagesArgs): ReturnChatMessages {
   const [previousMessages, setPreviousMessages] = useState<Message[]>([]);
   const [messages, setMessages] = useState<
     { senderUsername: string; message: string; receiverUsername: string }[]
@@ -28,6 +50,7 @@ export default function useChatMessages({ userId, userUsername, receiver }: Chat
 
   const sendJsonMessageThrottled = useRef(throttle(sendJsonMessage, 50));
 
+
   useEffect(() => {
     useGetUserDetails(userId, receiver.id, setPreviousMessages);
   }, [userId, receiver.id]);
@@ -43,5 +66,6 @@ export default function useChatMessages({ userId, userUsername, receiver }: Chat
     messages,
     sendJsonMessageThrottled,
     setMessages,
+    setPreviousMessages
   };
 }

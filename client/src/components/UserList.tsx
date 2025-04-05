@@ -4,15 +4,15 @@ import { LoginResponse } from "../types";
 
 type UserListProps = {
   user: LoginResponse | null;
-  setReceiverUsername: React.Dispatch<React.SetStateAction<User | null>>;
+  setReceiver: React.Dispatch<React.SetStateAction<User | null>>;
 };
 
-const UserList = ({ user, setReceiverUsername }: UserListProps) => {
+const UserList = ({ user, setReceiver }: UserListProps) => {
   const [users, setUsers] = useState<User[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   const handleChatUsername = (user: User) => {
-    setReceiverUsername(user);
+    setReceiver(user);
   };
 
   useEffect(() => {

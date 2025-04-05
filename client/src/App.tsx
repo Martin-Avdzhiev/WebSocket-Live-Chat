@@ -19,10 +19,16 @@ function App() {
         <>
           <div className="flex h-full pt-4 px-4">
             <div className="flex w-fit h-fit">
-              <UserList setReceiverUsername={setReceiver} user={user} />
+              <UserList setReceiver={setReceiver} user={user} />
             </div>
             <div className="flex items-end justify-end w-full">
-              {receiver && <Chat user={user} receiver={receiver} />}
+              {receiver && (
+                <Chat
+                  user={user}
+                  receiver={receiver}
+                  setReceiver={setReceiver}
+                />
+              )}
             </div>
           </div>
         </>
