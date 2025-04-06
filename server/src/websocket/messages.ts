@@ -24,21 +24,19 @@ const sendToUsers = (
 
 };
 
-const handleMessage = async (buffer: RawData, senderUuid: string) => {
-    const data: Message = JSON.parse(buffer.toString());
+const handleMessage = async (data: Message) => {
     if (data) {
         try {
-            const { message, receiverUsername } = data;
+            const { message, receiverUsername, senderUsername } = data;
             if (!message || typeof message !== "string") return;
-
-            const senderUsername = connections[senderUuid]?.user.username;
-            if (!senderUsername) return;
 
             const sender = await prisma.user.findUnique({
                 where: { username: senderUsername },
                 select: { id: true },
             });
             if (!sender) return;
+
+
 
             const receiver = await prisma.user.findUnique({
                 where: { username: receiverUsername },
@@ -57,7 +55,7 @@ const handleMessage = async (buffer: RawData, senderUuid: string) => {
             });
 
             sendToUsers(sender.id, receiver.id, {
-                senderUsername,
+                senderUsername: senderUsername,
                 receiverUsername,
                 message,
             });
@@ -68,10 +66,6 @@ const handleMessage = async (buffer: RawData, senderUuid: string) => {
     }
 };
 
-const handleClose = (uuid: string) => {
-    console.log(`${connections[uuid]?.user.username} disconnected`);
-    delete connections[uuid];
-};
 
 // const broadcast = (data: { username: string; message: string }) => {
 //     const message = JSON.stringify(data);
@@ -83,4 +77,4 @@ const handleClose = (uuid: string) => {
 //     });
 // };
 
-export { handleMessage, handleClose };
+export { handleMessage };

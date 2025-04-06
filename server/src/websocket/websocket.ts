@@ -2,11 +2,9 @@ import { Server } from "http";
 import { WebSocketServer, WebSocket } from "ws";
 import { parse } from "url";
 import { v4 as uuidv4 } from "uuid";
-
-import { handleMessage, handleClose } from "./messages";
 import { Connections } from "../types";
 import prisma from "../prismaClient";
-
+import { handleMessageRouter } from "./handleMessageRouter";
 const connections: Connections = {};
 
 const setupWebSocketServer = (server: Server) => {
@@ -40,9 +38,15 @@ const setupWebSocketServer = (server: Server) => {
 
         console.log(`${username} connected`);
 
-        socket.on("message", (message) => handleMessage(message, user ? user.id : uuid));
-        socket.on("close", () => handleClose(user ? user.id : uuid));
-    });
+        socket.on("message", (message) => handleMessageRouter(message));
+        socket.on("close", () => {
+            const uuid = Object.keys(connections).find((key) => connections[key].socket === socket);
+            if (uuid) {
+                console.log(`${connections[uuid]?.user.username} disconnected`);
+                delete connections[uuid];
+            }
+        });
+});
 
 };
 

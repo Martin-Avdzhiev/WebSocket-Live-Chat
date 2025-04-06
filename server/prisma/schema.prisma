@@ -14,14 +14,15 @@ datasource db {
 }
 
 model User {
-  id               String     @id @default(uuid())
-  username         String     @unique @db.VarChar(30)
-  createdAt        DateTime   @default(now()) @map("created_at")
-  updatedAt        DateTime   @updatedAt @map("updated_at")
-  deletedAt        DateTime?  @map("deleted_at")
-  sentMessages     Message[]  @relation("SentMessages")
-  receivedMessages Message[]  @relation("ReceivedMessages")
-  chatRooms        ChatRoom[] @relation("ChatRoomUsers")
+  id               String           @id @default(uuid())
+  username         String           @unique @db.VarChar(30)
+  createdAt        DateTime         @default(now()) @map("created_at")
+  updatedAt        DateTime         @updatedAt @map("updated_at")
+  deletedAt        DateTime?        @map("deleted_at")
+  sentMessages     Message[]        @relation("SentMessages")
+  receivedMessages Message[]        @relation("ReceivedMessages")
+  chatRooms        ChatRoom[]       @relation("ChatRoomUsers")
+  chatRoomInvites  ChatRoomInvite[]
 
   @@map("users")
 }
@@ -29,13 +30,13 @@ model User {
 model Message {
   id         String    @id @default(uuid())
   content    String    @db.VarChar(5000)
-  senderId   String
+  senderId   String    @map("sender_id")
   sender     User      @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
-  receiverId String
+  receiverId String    @map("receiver_id")
   receiver   User      @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
   createdAt  DateTime  @default(now()) @map("created_at")
   ChatRoom   ChatRoom? @relation(fields: [chatRoomId], references: [id])
-  chatRoomId String?
+  chatRoomId String?   @map("chat_room_id")
 
   @@index([senderId])
   @@index([receiverId])
@@ -44,9 +45,25 @@ model Message {
 }
 
 model ChatRoom {
-  id        String    @id @default(uuid())
+  id        String           @id @default(uuid())
   name      String?
   messages  Message[]
-  users     User[]    @relation("ChatRoomUsers")
-  createdAt DateTime  @default(now())
+  users     User[]           @relation("ChatRoomUsers")
+  invites   ChatRoomInvite[]
+  createdAt DateTime         @default(now())
+
+  @@map("chat_room")
+}
+
+model ChatRoomInvite {
+  id         String   @id @default(uuid())
+  chatRoom   ChatRoom @relation(fields: [chatRoomId], references: [id])
+  chatRoomId String
+  invitee    User     @relation(fields: [inviteeId], references: [id])
+  inviteeId  String
+  createdAt  DateTime @default(now())
+
+  @@index([inviteeId])
+  @@index([chatRoomId])
+  @@map("chat_room_invites")
 }
