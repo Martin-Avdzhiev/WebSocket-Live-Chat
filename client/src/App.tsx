@@ -1,11 +1,14 @@
 import { useState } from "react";
+
+import { useLogin } from "./hooks/useLogin";
+
 import Login from "./components/Login";
 import Chat from "./components/Chat";
 import UserList from "./components/UserList";
-import { LoginResponse } from "./types/responseTypes";
-
-import { useLogin } from "./hooks/useLogin";
 import { User } from "./hooks/useGetUsers";
+import { ChatRoomList } from "./components/ChatRoomList";
+
+import { LoginResponse } from "./types/responseTypes";
 function App() {
   const [user, setUser] = useState<LoginResponse | null>(null);
   const [receiver, setReceiver] = useState<User | null>(null);
@@ -18,8 +21,9 @@ function App() {
       {user ? (
         <>
           <div className="flex h-full pt-4 px-4">
-            <div className="flex w-fit h-fit">
+            <div className="flex w-fit h-fit flex-col gap-2 py-2 px-4 bg-[#D0E7FF] shadow-lg rounded-lg p-4 border border-white/50">
               <UserList setReceiver={setReceiver} user={user} />
+              <ChatRoomList />
             </div>
             <div className="flex items-end justify-end w-full">
               {receiver && (

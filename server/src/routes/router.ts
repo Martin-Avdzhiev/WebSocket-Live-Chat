@@ -2,7 +2,7 @@ import { Router } from "express";
 import { Request, Response } from "express";
 
 import userRouter from "./users";
-import chatRoomRouter from "./chatRoom";
+import chatRoomRouter from "./chatRooms";
 const router = Router();
 
 router.get("/", (req: Request, res: Response): void => {
