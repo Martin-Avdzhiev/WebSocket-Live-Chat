@@ -2,7 +2,7 @@ import { useState } from "react";
 import Login from "./components/Login";
 import Chat from "./components/Chat";
 import UserList from "./components/UserList";
-import { LoginResponse } from "./types";
+import { LoginResponse } from "./types/responseTypes";
 
 import { useLogin } from "./hooks/useLogin";
 import { User } from "./hooks/useGetUsers";

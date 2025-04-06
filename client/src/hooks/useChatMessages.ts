@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import useWebSocket from "react-use-websocket";
 import throttle from "lodash.throttle";
-import { Message } from "../types";
+import { MessageResponse } from "../types/responseTypes";
 import { User } from "./useGetUsers";
 import useGetUserDetails from "./useGetUserDetails";
 import { SendJsonMessage } from "react-use-websocket/dist/lib/types";
@@ -14,7 +14,7 @@ type ChatMessagesArgs = {
 };
 
 export type ReturnChatMessages = {
-  previousMessages: Message[];
+  previousMessages: MessageResponse[];
   messages: {
     senderUsername: string;
     message: string;
@@ -30,11 +30,11 @@ export type ReturnChatMessages = {
       }[]
     >
   >;
-  setPreviousMessages: React.Dispatch<React.SetStateAction<Message[]>>;
+  setPreviousMessages: React.Dispatch<React.SetStateAction<MessageResponse[]>>;
 }
 
 export default function useChatMessages({ userId, userUsername, receiver }: ChatMessagesArgs): ReturnChatMessages {
-  const [previousMessages, setPreviousMessages] = useState<Message[]>([]);
+  const [previousMessages, setPreviousMessages] = useState<MessageResponse[]>([]);
   const [messages, setMessages] = useState<
     { senderUsername: string; message: string; receiverUsername: string }[]
   >([]);

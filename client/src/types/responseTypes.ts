@@ -1,12 +1,12 @@
-export type LoginResponse = {
-    id:string;
-    username:string;
+type LoginResponse = {
+    id: string;
+    username: string;
     createdAt: Date;
     updatedAt: Date;
     deletedAt: Date | null;
 }
 
-export type Message = {
+type MessageResponse = {
     id: string;
     content: string;
     senderId: string;
@@ -14,3 +14,5 @@ export type Message = {
     createdAt: string;
     chatRoomId: string | null;
 }
+
+export type { LoginResponse, MessageResponse };

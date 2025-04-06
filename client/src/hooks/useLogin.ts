@@ -1,4 +1,4 @@
-import { LoginResponse } from "../types";
+import { LoginResponse } from "../types/responseTypes";
 type Login = {
     username: string
     setUser: React.Dispatch<React.SetStateAction<LoginResponse | null>>

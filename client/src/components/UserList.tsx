@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import useGetUsers, { User } from "../hooks/useGetUsers";
-import { LoginResponse } from "../types";
+import { LoginResponse } from "../types/responseTypes";
 
 type UserListProps = {
   user: LoginResponse | null;

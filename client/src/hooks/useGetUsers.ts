@@ -1,4 +1,4 @@
-import { LoginResponse } from "../types";
+import { LoginResponse } from "../types/responseTypes";
 
 export type User = {
     id: string;

@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState, useCallback } from "react";
-import { LoginResponse } from "../types";
+import { LoginResponse } from "../types/responseTypes";
 import { User } from "../hooks/useGetUsers";
 import useChatMessages from "../hooks/useChatMessages";
 import { useMessages } from "../hooks/useMessages";
