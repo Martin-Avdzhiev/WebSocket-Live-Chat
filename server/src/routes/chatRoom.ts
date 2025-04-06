@@ -8,6 +8,26 @@ const chatRoomRouter = Router();
 
 // 1 create route to create chatroom
 
+/**
+ * @openapi
+ * /chatRooms/{userId}:
+ *   post:
+ *     tags:
+ *       - Chat Rooms
+ *     summary: Create a new chatroom and add the user to it
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       201:
+ *         description: Chat room created successfully
+ *       500:
+ *         description: Internal server error
+ */
+
 chatRoomRouter.post("/:userId", async (req: Request, res: Response) => {
     const { userId } = req.params;
     try {
@@ -25,7 +45,37 @@ chatRoomRouter.post("/:userId", async (req: Request, res: Response) => {
     }
 });
 
-// 2 create route to ask user to join chatroom
+// 2 create route to ask user to join chat room
+
+/**
+ * @openapi
+ * /chatRooms/askToJoin:
+ *   post:
+ *     tags:
+ *       - Chat Rooms
+ *     summary: Create a new invitation to chat room
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - inviteeId
+ *               - chatRoomId
+ *             properties:
+ *               inviteeId:
+ *                 type: string
+ *                 description: The ID of the user being invited
+ *               chatRoomId:
+ *                 type: string
+ *                 description: The ID of the chat room
+ *     responses:
+ *       201:
+ *         description: Invitation to chat room created successfully
+ *       500:
+ *         description: Internal server error
+ */
 
 chatRoomRouter.post('/askToJoin', async(req: Request, res: Response) => {
     const {inviteeId, chatRoomId} = req.body;

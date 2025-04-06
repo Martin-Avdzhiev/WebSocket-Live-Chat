@@ -10,6 +10,6 @@ router.get("/", (req: Request, res: Response): void => {
 });
 
 router.use("/users", userRouter);
-router.use('/chatroom', chatRoomRouter)
+router.use('/chatRooms', chatRoomRouter)
 
 export default router;

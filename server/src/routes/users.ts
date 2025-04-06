@@ -5,6 +5,33 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 const userRouter = Router();
 
+/**
+ * @openapi
+ * /users/user:
+ *   get:
+ *     tags:
+ *       - Users
+ *     summary: Get a user with chat messages (send and received) with specific user
+ *     parameters:
+ *       - in: query
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: receiverId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Success response
+ *       404:
+ *         description: User is not found
+ *       500:
+ *         description: Internal server error
+ */
+
 userRouter.get("/user", async (req: Request, res: Response): Promise<void> => {
     const { userId, receiverId } = req.query;
     try {
@@ -41,6 +68,23 @@ userRouter.get("/user", async (req: Request, res: Response): Promise<void> => {
     }
 });
 
+
+/**
+ * @openapi
+ * /users/all:
+ *   get:
+ *     tags:
+ *       - Users
+ *     summary: Get all users
+ *     responses:
+ *       200:
+ *         description: Success response
+ *       404:
+ *         description: No users found
+ *       500:
+ *         description: Internal server error
+ */
+
 userRouter.get("/all", async (req: Request, res: Response): Promise<void> => {
     try {
         const users = await prisma.user.findMany();
@@ -55,6 +99,34 @@ userRouter.get("/all", async (req: Request, res: Response): Promise<void> => {
         res.status(500).json({ error: "Failed to fetch users" });
     }
 });
+
+/**
+ * @openapi
+ * /users:
+ *   post:
+ *     tags:
+ *       - Users
+ *     summary: Create a user
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - username
+ *             properties:
+ *               username:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: The user is successfully created
+ *       400:
+ *         description: Username is missing
+ *       500:
+ *         description: Internal server error
+ */
+
 
 userRouter.post("", async (req: Request, res: Response): Promise<void> => {
     const user = req.body;
