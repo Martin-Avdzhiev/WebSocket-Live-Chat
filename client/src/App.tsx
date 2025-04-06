@@ -23,7 +23,7 @@ function App() {
           <div className="flex h-full pt-4 px-4">
             <div className="flex w-fit h-fit flex-col gap-2 py-2 px-4 bg-[#D0E7FF] shadow-lg rounded-lg p-4 border border-white/50">
               <UserList setReceiver={setReceiver} user={user} />
-              <ChatRoomList />
+              <ChatRoomList user={user} />
             </div>
             <div className="flex items-end justify-end w-full">
               {receiver && (

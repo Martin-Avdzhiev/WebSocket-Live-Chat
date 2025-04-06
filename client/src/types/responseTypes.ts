@@ -15,4 +15,10 @@ type MessageResponse = {
     chatRoomId: string | null;
 }
 
-export type { LoginResponse, MessageResponse };
+type ChatRoomsResponse = {
+    id: string;
+    name: string;
+    createdAt: Date;
+}
+
+export type { LoginResponse, MessageResponse, ChatRoomsResponse };

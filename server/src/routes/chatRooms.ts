@@ -8,12 +8,30 @@ const chatRoomRouter = Router();
 
 // 1 create route to create chatroom
 
-
-chatRoomRouter.post("/:userId", async (req: Request, res: Response) => {
+chatRoomRouter.get("/:userId", async (req: Request, res: Response) => {
     const { userId } = req.params;
+    try {
+        const data = await prisma.user.findUnique({
+            where: {
+                id: userId
+            },
+            include: {
+                chatRooms: true
+            }
+        })
+        res.status(201).json(data?.chatRooms);
+    } catch (error) {
+        console.error("Error creating chat room:", error);
+        res.status(500).json({ error: "Failed to create chat room" });
+    }
+});
+
+chatRoomRouter.post("/", async (req: Request, res: Response) => {
+    const { userId, name } = req.body;
     try {
         const chatRoom = await prisma.chatRoom.create({
             data: {
+                name,
                 users: {
                     connect: [{ id: userId }],
                 },

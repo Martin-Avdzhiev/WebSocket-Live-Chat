@@ -34,7 +34,7 @@ const UserList = ({ user, setReceiver }: UserListProps) => {
             className="flex items-center justify-start cursor-pointer relative max-w-fit gap-1"
             onClick={() => handleChatUsername(user)}
           >
-            <SquareUserRound size={"1.5rem"} />
+            <SquareUserRound size={"1.25rem"} />
             <p className="w-full max-w-fit font-bold text-lg">
               {user.username}
             </p>
