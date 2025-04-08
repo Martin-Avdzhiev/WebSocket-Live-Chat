@@ -4,10 +4,16 @@ type Message = {
     receiverUsername: string;
 };
 
+type ChatRoomMessage = {
+    senderId: string;
+    chatRoomId: string;
+    content: string;
+}
+
 type Invitation = {
     inviterId: string;
     inviteeId: string;
     chatRoomId: string;
 }
 
-export type { Message, Invitation };
+export type { Message, ChatRoomMessage, Invitation };

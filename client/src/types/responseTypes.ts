@@ -21,4 +21,21 @@ type ChatRoomsResponse = {
     createdAt: Date;
 }
 
-export type { LoginResponse, MessageResponse, ChatRoomsResponse };
+type ChatRoomDetailsResponse = {
+    name: string,
+    users: { username: string }[],
+    messages: {
+        content: string,
+        createdAt: Date,
+        sender: { username: string }
+    }[]
+}
+
+type ChatRoomInviteResponse = {
+    id: string;
+    chatRoomId: string;
+    inviteeId: string;
+    createdAt: Date;
+}
+
+export type { LoginResponse, MessageResponse, ChatRoomsResponse, ChatRoomDetailsResponse, ChatRoomInviteResponse };

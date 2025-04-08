@@ -16,6 +16,11 @@ export type Message = {
     message: string;
     receiverUsername: string;
 };
+export type ChatRoomMessage = {
+    senderId: string;
+    chatRoomId: string;
+    content: string;
+};
 
 export type Invitation = {
     inviterId: string;

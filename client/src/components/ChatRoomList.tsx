@@ -9,7 +9,6 @@ type ChatRoomListProps = {
 };
 export const ChatRoomList = ({ user }: ChatRoomListProps) => {
   const [chatRooms, setChatRooms] = useState<ChatRoomsResponse[]>([]);
-  console.log(chatRooms);
   useEffect(() => {
     useGetAllUserChatRooms(user.id)
       .then((chatRooms) => setChatRooms(chatRooms))

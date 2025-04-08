@@ -1,7 +1,12 @@
-import {Message, Invitation} from './types'
+import {Message, Invitation, ChatRoomMessage} from './types'
 type MessagePayload = {
     type: "message";
     data: Message;
+};
+
+type ChatMessagePayload = {
+    type: "chatRoomMessage";
+    data: ChatRoomMessage;
 };
 
 type InvitePayload = {
@@ -9,4 +14,4 @@ type InvitePayload = {
     data: Invitation;
 };
 
-export type {  MessagePayload, InvitePayload };
+export type {  MessagePayload, ChatMessagePayload, InvitePayload };

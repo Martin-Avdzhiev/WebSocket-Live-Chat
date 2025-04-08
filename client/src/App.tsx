@@ -8,11 +8,11 @@ import UserList from "./components/UserList";
 import { User } from "./hooks/useGetUsers";
 import { ChatRoomList } from "./components/ChatRoomList";
 
-import { LoginResponse } from "./types/responseTypes";
+import { LoginResponse, ChatRoomsResponse } from "./types/responseTypes";
 function App() {
   const [user, setUser] = useState<LoginResponse | null>(null);
   const [receiver, setReceiver] = useState<User | null>(null);
-
+  const [chatRoom, setChatRoom] = useState<ChatRoomsResponse | null>(null);
   const submitHandler = (username: string) => {
     useLogin({ username, setUser });
   };
@@ -31,6 +31,7 @@ function App() {
                   user={user}
                   receiver={receiver}
                   setReceiver={setReceiver}
+                  setChatRoom={setChatRoom}
                 />
               )}
             </div>

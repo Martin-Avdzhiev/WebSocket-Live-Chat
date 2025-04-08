@@ -1,4 +1,4 @@
-import { RawData, WebSocket } from "ws";
+import { WebSocket } from "ws";
 import prisma from "../prismaClient";
 import { Message } from "../types";
 import { connections } from "./websocket";
@@ -9,23 +9,26 @@ const sendToUsers = (
     data: { senderUsername: string; message: string; receiverUsername: string }
 ) => {
     const message = JSON.stringify(data);
-
     // Send message to the sender
     const senderSocket = connections[senderUuid]?.socket;
     if (senderSocket && senderSocket.readyState === WebSocket.OPEN) {
+        console.log(connections[senderUuid]?.user.username);
         senderSocket.send(message);
     }
-
+    
     // Send message to the receiver
     const receiverSocket = connections[receiverUuid]?.socket;
     if (receiverSocket && receiverSocket.readyState === WebSocket.OPEN) {
+        console.log(connections[receiverUuid]?.user.username);
         receiverSocket.send(message);
     }
 
 };
 
 const handleMessage = async (data: Message) => {
+    console.log('hi')
     if (data) {
+        console.log(data)
         try {
             const { message, receiverUsername, senderUsername } = data;
             if (!message || typeof message !== "string") return;

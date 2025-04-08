@@ -6,7 +6,7 @@ const chatRoomRouter = Router();
 
 // Create Chatroom
 
-// 1 create route to create chatroom
+// 1 create route to get all chat rooms for user
 
 chatRoomRouter.get("/:userId", async (req: Request, res: Response) => {
     const { userId } = req.params;
@@ -26,6 +26,41 @@ chatRoomRouter.get("/:userId", async (req: Request, res: Response) => {
     }
 });
 
+// 2 create route to get chat room details
+
+chatRoomRouter.get("/chatRoomDetails/:chatRoomId", async (req: Request, res: Response) => {
+    const { chatRoomId } = req.params;
+    try {
+        const data = await prisma.chatRoom.findUnique({
+            where: { id: chatRoomId },
+            select: {
+                id: true,
+                name: true,
+                users: {
+                    select: { username: true }
+                },
+                messages: {
+                    select: {
+                        id:true,
+                        content: true,
+                        createdAt: true,
+                        sender: {
+                            select: { username: true }
+                        }
+                    },
+                    orderBy: { createdAt: 'asc' }
+                }
+            }
+        })
+        res.status(201).json(data);
+    } catch (error) {
+        console.error("Error creating chat room:", error);
+        res.status(500).json({ error: "Failed to create chat room" });
+    }
+});
+
+// 3 create route to create chatroom
+
 chatRoomRouter.post("/", async (req: Request, res: Response) => {
     const { userId, name } = req.body;
     try {
@@ -44,7 +79,38 @@ chatRoomRouter.post("/", async (req: Request, res: Response) => {
     }
 });
 
-// 2 create route to ask user to join chat room
+// 3 create route to send message to chat room
+
+// chatRoomRouter.post("/message", async (req: Request, res: Response) => {
+//     const { senderId, chatRoomId, content } = req.body;
+
+
+//     if (!senderId || !chatRoomId || !content) {
+//         res.status(400).json({ error: "Missing required fields" });
+//         return
+//     }
+//     try {
+//         const message = await prisma.message.create({
+//             data: {
+//                 content,
+//                 sender: { connect: { id: senderId } },
+//                 ChatRoom: { connect: { id: chatRoomId } }
+//             },
+//             include: {
+//                 sender: { select: { username: true } },
+//                 ChatRoom: { select: { name: true } }
+//             }
+//         });
+
+//         res.status(201).json(message);
+//     } catch (error) {
+//         console.error("Error sending message:", error);
+//         res.status(500).json({ error: "Failed to send message" });
+//     }
+// });
+
+
+// 4 create route to ask user to join chat room
 
 chatRoomRouter.post('/askToJoin', async (req: Request, res: Response) => {
     const { inviteeId, chatRoomId } = req.body;
@@ -74,9 +140,9 @@ chatRoomRouter.post('/askToJoin', async (req: Request, res: Response) => {
         res.status(500).json({ error: "Error inviting user to chat room" });
     }
 });
-// 3 create websocket when user is logging to display notification if it's asked to join chatroom
-// 4 create route to ask user to leave chatroom
-// 5 create route to fetch all users and all messages from chatroom
+// 5 create websocket when user is logging to display notification if it's asked to join chatroom
+// 6 create route to ask user to leave chatroom
+// 7 create route to fetch all users and all messages from chatroom
 
 export default chatRoomRouter;
 

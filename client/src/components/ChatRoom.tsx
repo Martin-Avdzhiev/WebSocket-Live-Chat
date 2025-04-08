@@ -1,60 +1,45 @@
 import { useRef, useEffect, useState, useCallback } from "react";
 import { ChatRoomsResponse, LoginResponse } from "../types/responseTypes";
-import { User } from "../hooks/useGetUsers";
-import useChatMessages from "../hooks/useChatMessages";
-import { useMessages } from "../hooks/useMessages";
+import useChatRoomMessagesWebsocket from "../hooks/chatRoom/useChatRoomMessagesWebsocket";
+import { useChatRoomMessages } from "../hooks/chatRoom/useChatRoomMessages";
 
-type ChatProps = {
+type ChatRoomProps = {
   user: LoginResponse;
-  receiver: User;
-  setReceiver: React.Dispatch<React.SetStateAction<User | null>>;
+  chatRoom: ChatRoomsResponse;
   setChatRoom: React.Dispatch<React.SetStateAction<ChatRoomsResponse | null>>;
 };
 
-const Chat = ({ user, receiver, setReceiver, setChatRoom }: ChatProps) => {
+const ChatRoom = ({ user, chatRoom, setChatRoom }: ChatRoomProps) => {
   const [currentMessage, setCurrentMessage] = useState("");
 
-  const {
-    previousMessages,
-    messages,
-    sendJsonMessageThrottled,
-    setMessages,
-    setPreviousMessages,
-  } = useChatMessages({
-    userId: user.id,
-    userUsername: user.username,
-    receiver,
-  });
+  const { messages, populatedChatRoom, sendJsonChatRoomMessageThrottled } =
+    useChatRoomMessagesWebsocket({ chatRoom });
 
   const bottomRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
-    setChatRoom(null);
     return () => {
       setCurrentMessage("");
-      setMessages([]);
-      setPreviousMessages([]);
+      setChatRoom(null);
     };
-  }, [receiver]);
+  }, [chatRoom]);
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages.length]);
   useEffect(() => {
     bottomRef.current?.scrollIntoView();
-  }, [previousMessages.length]);
+  }, [populatedChatRoom?.messages.length]);
 
   const closeChatHandler = useCallback(() => {
     setCurrentMessage("");
-    setReceiver(null);
-    setMessages([]);
-    setPreviousMessages([]);
-  }, [setReceiver]);
+    setChatRoom(null);
+  }, [setChatRoom]);
 
-  const sendMessage = useMessages({
+  const sendMessage = useChatRoomMessages({
     currentMessage,
-    username: user.username,
-    receiverUsername: receiver.username,
-    sendJsonMessageThrottled,
+    senderId: user.id,
+    chatRoomId: chatRoom.id,
     setCurrentMessage,
+    sendJsonChatRoomMessageThrottled,
   });
 
   return (
@@ -63,7 +48,7 @@ const Chat = ({ user, receiver, setReceiver, setChatRoom }: ChatProps) => {
         <div className="relative flex items-center justify-between px-4 py-2">
           <div className="w-6"></div>
           <p className="absolute left-1/2 transform -translate-x-1/2 font-bold">
-            {receiver.username}
+            {chatRoom.name}
           </p>
           <p
             className="w-6 font-bold text-lg text-center cursor-pointer hover:opacity-50 text-[#b625ff99]"
@@ -76,22 +61,19 @@ const Chat = ({ user, receiver, setReceiver, setChatRoom }: ChatProps) => {
         {/* <div className="flex flex-wrap justify-center">
         </div> */}
         <div className="flex flex-col h-60 overflow-y-auto w-full">
-          {previousMessages.map((msg) => (
+          {populatedChatRoom?.messages.map((msg) => (
             <p
               key={msg.id}
               className={`p-2 max-w-[80%] break-words whitespace-normal border rounded ${
-                msg.senderId === user.id
+                msg.sender.username === user.username
                   ? "bg-blue-200 self-start text-left"
                   : "bg-gray-100 self-end text-right"
               }`}
             >
-              <strong>
-                {msg.senderId === user.id ? user.username : receiver.username}:
-              </strong>{" "}
-              {msg.content}
+              <strong>{msg.sender.username}:</strong> {msg.content}
             </p>
           ))}
-          {messages.map((msg, index) => (
+          {/* {messages.map((msg, index) => (
             <p
               key={index}
               className={`p-2 max-w-[80%] break-words whitespace-normal border rounded ${
@@ -102,13 +84,10 @@ const Chat = ({ user, receiver, setReceiver, setChatRoom }: ChatProps) => {
             >
               <strong>{msg.senderUsername}:</strong> {msg.message}
             </p>
-          ))}
-          {messages.length === 0 && previousMessages.length === 0 && (
+          ))} */}
+          {populatedChatRoom?.messages.length === 0 && (
             <div className="h-full flex items-end text-center text-gray-900">
-              <p>
-                You dont't have a chat history with{" "}
-                <strong>{receiver.username}</strong>
-              </p>
+              <p>You dont't have a chat history</p>
             </div>
           )}
           <div ref={bottomRef} />
@@ -130,4 +109,4 @@ const Chat = ({ user, receiver, setReceiver, setChatRoom }: ChatProps) => {
   );
 };
 
-export default Chat;
+export default ChatRoom;
