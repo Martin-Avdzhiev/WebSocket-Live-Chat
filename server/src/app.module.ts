@@ -8,6 +8,6 @@ import { ChatWebsocketModule } from './chat_websocket/chat_websocket.module';
   imports: [UsersModule, PrismaModule, ChatWebsocketModule],
   controllers: [],
   providers: [PrismaService],
-  exports: [PrismaService],
+  exports: [PrismaService, UsersModule],
 })
 export class AppModule {}

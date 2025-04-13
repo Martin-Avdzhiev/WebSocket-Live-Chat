@@ -1,13 +1,29 @@
+import { InternalServerErrorException } from "@nestjs/common";
 import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
+import { UsersService } from "src/users/services/users.service";
 
 @WebSocketGateway(3001, { cors: { origin: '*' } })
 export class ChatWebsocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @WebSocketServer() server: Server;
 
-    handleConnection(client: Socket) {
-        console.log("New user connected: ", client.id);
-        this.server.emit('user-joined',`New user connected: ${client.id}`);
+    constructor(private usersService: UsersService) { }
+
+    private connectedUsers: Map<string, { socket: Socket, username: string }> = new Map();
+    async handleConnection(client: Socket) {
+
+        const username = client.handshake.headers['username'];
+        try {
+            if (!username || typeof username !== 'string') throw new Error('Invalid username');
+
+            const user = await this.usersService.createUser({ username });
+            this.connectedUsers.set(user.id, { socket: client, username });
+
+        } catch (error) {
+            throw new InternalServerErrorException('Internal Server Error');
+        }
+        console.log("New user connected: ", this.connectedUsers);
+        this.server.emit('user-joined', `New user connected: ${client.id}`);
 
     }
     handleDisconnect(client: Socket) {
