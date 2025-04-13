@@ -18,12 +18,12 @@ export class ChatWebsocketGateway implements OnGatewayConnection, OnGatewayDisco
 
             const user = await this.usersService.createUser({ username });
             this.connectedUsers.set(user.id, { socket: client, username });
+            client.emit('user-info', user);
+            this.server.emit('user-joined', `New user connected: ${client.id}`);
 
         } catch (error) {
             throw new InternalServerErrorException('Internal Server Error');
         }
-        console.log("New user connected: ", this.connectedUsers);
-        this.server.emit('user-joined', `New user connected: ${client.id}`);
 
     }
     handleDisconnect(client: Socket) {

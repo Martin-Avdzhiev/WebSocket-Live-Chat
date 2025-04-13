@@ -1,28 +1,10 @@
-import { LoginResponse } from "../types/responseTypes";
-type Login = {
-    username: string
-    setUser: React.Dispatch<React.SetStateAction<LoginResponse | null>>
-}
+import { io, Socket } from "socket.io-client";
 
-export const useLogin = ({ username, setUser }: Login): void => {
-    const login = async (): Promise<void> => {
-        try {
-            const res = await fetch("http://localhost:8000/users", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username }),
-            });
-
-            if (!res.ok) {
-                throw new Error("Failed to login");
-            }
-
-            const data: LoginResponse = await res.json();
-            setUser(data);
-            return
-        } catch (error) {
-            console.error(error);
-        }
-    };
-    login();
+export const useLogin = (username: string): Socket => {
+  const socket: Socket = io("http://localhost:3001", {
+    extraHeaders: {
+      username,
+    },
+  });
+  return socket;
 };
