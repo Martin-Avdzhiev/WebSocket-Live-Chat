@@ -5,7 +5,6 @@ import { Server, Socket } from "socket.io";
 export class ChatWebsocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @WebSocketServer() server: Server;
 
-    @SubscribeMessage('connection')
     handleConnection(client: Socket) {
         console.log("New user connected: ", client.id);
         this.server.emit('user-joined',`New user connected: ${client.id}`);
