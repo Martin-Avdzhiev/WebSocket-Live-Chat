@@ -42,7 +42,7 @@ export class ChatWebsocketGateway implements OnGatewayConnection, OnGatewayDisco
         this.server.emit('user-left', client.id);
     }
 
-    @SubscribeMessage('message')
+    @SubscribeMessage('sendedPersonalMessage')
     async handlerMessages(
         @ConnectedSocket() client: Socket,
         @MessageBody(new StringToJsonPipe(PersonalMessageDto)) data: PersonalMessageDto
@@ -50,9 +50,9 @@ export class ChatWebsocketGateway implements OnGatewayConnection, OnGatewayDisco
 
         const { senderUsername, receiverUsername, message } = data;
         try {
-            const { senderId, receiverId } = await this.ChatMessageService.createPersonalMessage({ senderUsername, receiverUsername, message });
+            const messageData = await this.ChatMessageService.createPersonalMessage({ senderUsername, receiverUsername, message });
 
-            this.ChatWebsocketService.sendPersonalMessage({ message, senderId, receiverId, connectedUsers: this.connectedUsers });
+            this.ChatWebsocketService.sendPersonalMessage({ messageData, connectedUsers: this.connectedUsers });
         } catch (error) {
             console.error('Error saving message:', error);
             client.emit('createPersonalMessage', 'Failed to send message');

@@ -1,18 +1,22 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Controller, Get, InternalServerErrorException, Post, Query } from '@nestjs/common';
 import { UsersService } from '../services/users.service';
-import { CreateUserDto } from '../dtos/create-user.dto';
+import { AllMessagesBetweenTwoUsersDto } from '../dtos/all-messages-between-two-users.dto';
 
 @Controller('users')
 export class UsersController {
 
-    constructor(private usersService: UsersService) {}
+    constructor(private usersService: UsersService) { }
     @Get()
     getAllUsers() {
         return this.usersService.getAllUsers();
     }
 
-    @Post()
-    createUser(@Body() data: CreateUserDto) {
-        return this.usersService.createUser(data);
+    @Get('personalMessages')
+    getAllMessagesBetweenTwoUsers(@Query() data: AllMessagesBetweenTwoUsersDto) {
+        try {
+            return this.usersService.getAllMessagesBetweenTwoUsers({ ...data })
+        } catch (error) {
+            throw new InternalServerErrorException('Internal Server Error');
+        }
     }
 }

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { AllMessagesBetweenTwoUsersDto } from '../dtos/all-messages-between-two-users.dto';
 
 @Injectable()
 export class UsersService {
@@ -40,4 +41,20 @@ export class UsersService {
     if(!user) throw new Error('User not found');
     return user;
   }
+
+  async getAllMessagesBetweenTwoUsers({senderId, receiverId}: AllMessagesBetweenTwoUsersDto) {
+    const messages = await this.prisma.message.findMany({
+      where: {
+        OR: [
+          { senderId, receiverId },
+          { senderId: receiverId, receiverId: senderId },
+        ],
+      },
+      orderBy: {
+        createdAt: 'asc',
+      },
+    });
+    return messages;
+  }
+
 }

@@ -1,16 +1,39 @@
 import { useState } from "react";
 import { ChatRoomsResponse, LoginResponse } from "../types/responseTypes";
-import { User } from "../hooks/useGetUsers";
+import { Socket } from "socket.io-client";
+import { usePersonalMessagesWebsocket } from "../hooks/usePersonalMessagesWebsocket";
+import { usePersonalMessagesHistory } from "../hooks/usePersonalMessagesHistory";
 
 type ChatProps = {
   user: LoginResponse;
-  receiver: User;
-  setReceiver: React.Dispatch<React.SetStateAction<User | null>>;
+  receiver: LoginResponse;
+  setReceiver: React.Dispatch<React.SetStateAction<LoginResponse | null>>;
   setChatRoom: React.Dispatch<React.SetStateAction<ChatRoomsResponse | null>>;
+  socket: Socket;
 };
 
-const Chat = ({ user, receiver, setReceiver, setChatRoom }: ChatProps) => {
+const Chat = ({
+  user,
+  receiver,
+  setReceiver,
+  setChatRoom,
+  socket,
+}: ChatProps) => {
   const [currentMessage, setCurrentMessage] = useState("");
+  const { messages, setMessages } = usePersonalMessagesHistory(user, receiver);
+
+  const sendMessage = () => {
+    const payload = {
+      senderUsername: user.username,
+      receiverUsername: receiver.username,
+      message: currentMessage,
+    };
+    socket.emit("sendedPersonalMessage", { ...payload });
+    setCurrentMessage("");
+  };
+
+  usePersonalMessagesWebsocket({ socket, setMessages });
+
   const closeChatHandler = () => {
     setReceiver(null);
   };
@@ -32,8 +55,8 @@ const Chat = ({ user, receiver, setReceiver, setChatRoom }: ChatProps) => {
 
         {/* <div className="flex flex-wrap justify-center">
         </div> */}
-        <div className="flex flex-col h-60 overflow-y-auto w-full">
-          {/* {previousMessages.map((msg) => (
+        <div className="flex flex-col h-60 overflow-y-auto w-full gap-2">
+          {messages.map((msg) => (
             <p
               key={msg.id}
               className={`p-2 max-w-[80%] break-words whitespace-normal border rounded ${
@@ -48,19 +71,7 @@ const Chat = ({ user, receiver, setReceiver, setChatRoom }: ChatProps) => {
               {msg.content}
             </p>
           ))}
-          {messages.map((msg, index) => (
-            <p
-              key={index}
-              className={`p-2 max-w-[80%] break-words whitespace-normal border rounded ${
-                msg.senderUsername === user.username
-                  ? "bg-blue-200 self-start text-left"
-                  : "bg-gray-100 self-end text-right"
-              }`}
-            >
-              <strong>{msg.senderUsername}:</strong> {msg.message}
-            </p>
-          ))}
-          {messages.length === 0 && previousMessages.length === 0 && (
+          {messages.length === 0 && (
             <div className="h-full flex items-end text-center text-gray-900">
               <p>
                 You dont't have a chat history with{" "}
@@ -68,7 +79,7 @@ const Chat = ({ user, receiver, setReceiver, setChatRoom }: ChatProps) => {
               </p>
             </div>
           )}
-          <div ref={bottomRef} /> */}
+          {/* <div ref={bottomRef} /> */}
         </div>
       </div>
       <div className="p-2 w-full rounded-lg">
@@ -78,9 +89,9 @@ const Chat = ({ user, receiver, setReceiver, setChatRoom }: ChatProps) => {
           placeholder="Type your message..."
           value={currentMessage}
           onChange={(e) => setCurrentMessage(e.target.value)}
-          // onKeyDown={(e) => {
-          //   if (e.key === "Enter") sendMessage();
-          // }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") sendMessage();
+          }}
         />
       </div>
     </div>

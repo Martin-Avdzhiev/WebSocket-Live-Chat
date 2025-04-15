@@ -7,7 +7,7 @@ import useGetAllUserChatRooms from "../hooks/chatRoom/useGetAllUserChatRooms";
 type ChatRoomListProps = {
   user: LoginResponse;
 };
-export const ChatRoomList = ({ user }: ChatRoomListProps) => {
+const ChatRoomList = ({ user }: ChatRoomListProps) => {
   const [chatRooms, setChatRooms] = useState<ChatRoomsResponse[]>([]);
   useEffect(() => {
     useGetAllUserChatRooms(user.id)
@@ -35,3 +35,5 @@ export const ChatRoomList = ({ user }: ChatRoomListProps) => {
     </div>
   );
 };
+
+export default ChatRoomList;

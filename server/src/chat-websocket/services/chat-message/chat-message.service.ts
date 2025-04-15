@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 type PersonalMessage = {
@@ -18,13 +18,16 @@ export class ChatMessageService {
       if (!sender || !receiver) {
           throw new Error("User not found");
       }
-      await this.prisma.message.create({
+      const messageData = await this.prisma.message.create({
           data: {
               senderId: sender.id,
               receiverId: receiver.id,
               content: message
           },
       })
-      return { senderId: sender.id, receiverId: receiver.id };
+      if(!messageData) {
+          throw new InternalServerErrorException("Internal Server Error");
+        }
+      return messageData;
   }
 }
