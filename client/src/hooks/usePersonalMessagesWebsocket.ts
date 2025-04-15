@@ -3,7 +3,7 @@ import { MessageResponse } from "../types/responseTypes";
 import { useEffect } from "react";
 type PersonalMessageWebsocket = {
     socket: Socket;
-    setMessages: React.Dispatch<React.SetStateAction<MessageResponse[]>>
+    setMessages: React.Dispatch<React.SetStateAction<MessageResponse[]>>;
 }
 
 export const usePersonalMessagesWebsocket = ({ socket, setMessages }: PersonalMessageWebsocket) => {

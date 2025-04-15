@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ChatRoomsResponse, LoginResponse } from "../types/responseTypes";
 import { Socket } from "socket.io-client";
 import { usePersonalMessagesWebsocket } from "../hooks/usePersonalMessagesWebsocket";
@@ -20,7 +20,16 @@ const Chat = ({
   socket,
 }: ChatProps) => {
   const [currentMessage, setCurrentMessage] = useState("");
+  const bottomRef = useRef<HTMLDivElement | null>(null);
   const { messages, setMessages } = usePersonalMessagesHistory(user, receiver);
+
+  usePersonalMessagesWebsocket({ socket, setMessages });
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({
+      behavior: "instant",
+    });
+  }, [messages]);
 
   const sendMessage = () => {
     const payload = {
@@ -31,8 +40,6 @@ const Chat = ({
     socket.emit("sendedPersonalMessage", { ...payload });
     setCurrentMessage("");
   };
-
-  usePersonalMessagesWebsocket({ socket, setMessages });
 
   const closeChatHandler = () => {
     setReceiver(null);
@@ -79,7 +86,7 @@ const Chat = ({
               </p>
             </div>
           )}
-          {/* <div ref={bottomRef} /> */}
+          <div ref={bottomRef} />
         </div>
       </div>
       <div className="p-2 w-full rounded-lg">

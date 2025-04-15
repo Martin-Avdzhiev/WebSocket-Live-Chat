@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { LoginResponse, MessageResponse } from "../types/responseTypes";
 
-
 export const usePersonalMessagesHistory = (user: LoginResponse, receiver: LoginResponse) => {
     const [messages, setMessages] = useState<MessageResponse[]>([]);
 
@@ -23,5 +22,5 @@ export const usePersonalMessagesHistory = (user: LoginResponse, receiver: LoginR
             });
     }, [receiver?.id]);
 
-    return {messages, setMessages};
+    return { messages, setMessages };
 }
