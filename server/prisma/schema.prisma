@@ -22,7 +22,9 @@ model User {
   sentMessages     Message[]        @relation("SentMessages")
   receivedMessages Message[]        @relation("ReceivedMessages")
   chatRooms        ChatRoom[]       @relation("ChatRoomUsers")
-  chatRoomInvites  ChatRoomInvite[]
+  invitedTo        ChatRoomInvite[] @relation("InviteeRelation")
+  invitedBy        ChatRoomInvite[] @relation("InviterRelation")
+  ownedChatRooms   ChatRoom[]       @relation("ownedChatRooms")
 
   @@map("users")
 }
@@ -46,21 +48,25 @@ model Message {
 
 model ChatRoom {
   id        String           @id @default(uuid())
-  name      String?
+  name      String
   messages  Message[]
   users     User[]           @relation("ChatRoomUsers")
   invites   ChatRoomInvite[]
   createdAt DateTime         @default(now())
+  owner     User             @relation(fields: [ownerId], references: [id], name: "ownedChatRooms")
+  ownerId   String
 
-  @@map("chat_room")
+  @@map("chat_rooms")
 }
 
 model ChatRoomInvite {
   id         String   @id @default(uuid())
   chatRoom   ChatRoom @relation(fields: [chatRoomId], references: [id])
   chatRoomId String
-  invitee    User     @relation(fields: [inviteeId], references: [id])
+  invitee    User     @relation("InviteeRelation", fields: [inviteeId], references: [id])
   inviteeId  String
+  inviter    User     @relation("InviterRelation", fields: [inviterId], references: [id])
+  inviterId  String
   createdAt  DateTime @default(now())
 
   @@index([inviteeId])
