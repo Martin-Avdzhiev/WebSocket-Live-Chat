@@ -1,8 +1,8 @@
-import { ChatRoomsResponse } from "../../types/responseTypes";
+import { UserChatRoomsResponse } from "../../types/responseTypes";
 
-const useGetAllUserChatRooms = async (userId: string): Promise<ChatRoomsResponse[]> => {
-    const response = await fetch(`http://localhost:8000/chatRooms/${userId}`);
-    const chatRooms: ChatRoomsResponse[] = await response.json();
+const useGetAllUserChatRooms = async (userId: string): Promise<UserChatRoomsResponse> => {
+    const response = await fetch(`http://localhost:3000/users/${userId}/chatRooms`);
+    const chatRooms: UserChatRoomsResponse = await response.json();
     return chatRooms;
 }
 

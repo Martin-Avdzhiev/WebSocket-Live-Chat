@@ -19,6 +19,20 @@ type ChatRoomsResponse = {
     id: string;
     name: string;
     createdAt: Date;
+    ownerId?: string;
+}
+
+type UserChatRoomsResponse = {
+    id: string,
+    username: string,
+    createdAt: Date,
+    updatedAt: Date,
+    deletedAt: Date | null,
+    chatRooms: {
+        id: string,
+        name: string,
+        createdAt: Date;
+    }[]
 }
 
 type ChatRoomDetailsResponse = {
@@ -38,4 +52,4 @@ type ChatRoomInviteResponse = {
     createdAt: Date;
 }
 
-export type { LoginResponse, MessageResponse, ChatRoomsResponse, ChatRoomDetailsResponse, ChatRoomInviteResponse };
+export type { LoginResponse, MessageResponse, ChatRoomsResponse, UserChatRoomsResponse, ChatRoomDetailsResponse, ChatRoomInviteResponse };

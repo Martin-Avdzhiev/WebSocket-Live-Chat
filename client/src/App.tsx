@@ -9,13 +9,14 @@ import UserList from "./components/UserList";
 import ChatRoomList from "./components/ChatRoomList";
 
 import { ChatRoomsResponse, LoginResponse } from "./types/responseTypes";
+import CreateChatRoom from "./components/CreateChatRoom";
 
 function App() {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [user, setUser] = useState<LoginResponse | null>(null);
   const [receiver, setReceiver] = useState<LoginResponse | null>(null);
   const [chatRoom, setChatRoom] = useState<ChatRoomsResponse | null>(null);
-
+  const [chatRooms, setChatRooms] = useState<ChatRoomsResponse[]>([]);
   const submitHandler = (username: string) => {
     const socketInstance = useLogin(username);
 
@@ -37,10 +38,17 @@ function App() {
     <div className="flex flex-col border w-full h-screen">
       {user ? (
         <>
-          <div className="flex h-full pt-4 px-4">
+          <div className="flex h-full pt-4 px-4 gap-6">
             <div className="flex w-fit h-fit flex-col gap-2 py-2 px-4 bg-[#D0E7FF] shadow-lg rounded-lg p-4 border border-white/50">
               <UserList setReceiver={setReceiver} user={user} />
-              {/* <ChatRoomList user={user} /> */}
+              <ChatRoomList
+                user={user}
+                chatRooms={chatRooms}
+                setChatRooms={setChatRooms}
+              />
+            </div>
+            <div className="flex w-fit h-fit flex-col gap-2 py-2 px-4 bg-[#D0E7FF] shadow-lg rounded-lg p-4 border border-white/50">
+              <CreateChatRoom user={user} setChatRooms={setChatRooms} />
             </div>
             <div className="flex items-end justify-end w-full">
               {receiver && socket && (
